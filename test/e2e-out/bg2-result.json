@@ -1,0 +1,18 @@
+{
+  "target": {
+    "name": "A peer session named dsh-bridge-cap will send you a message. When it arrives, immediately use the SendMessage tool to reply to session name dsh-bridge-cap with the exact text PONG:<the message text>.",
+    "sessionId": "9ab76d71-c846-47ff-a3c6-bc2d00b78bd2",
+    "status": "busy",
+    "cwd": "E:\\workspaces\\dsh\\dsh-conf",
+    "version": "2.1.329",
+    "pid": 51208,
+    "alive": true,
+    "inbox": "\\\\.\\pipe\\LOCAL\\cc-msg-ece6161633347ed070fe24a6550a39bb"
+  },
+  "sent": {
+    "msgId": "e5d892e0-b495-46e4-a4a4-4a074923f3d5",
+    "to": "A peer session named dsh-bridge-cap will send you a message. When it arrives, immediately use the SendMessage tool to reply to session name dsh-bridge-cap with the exact text PONG:<the message text>.",
+    "notifyIdleSent": true
+  },
+  "msgs": []
+}

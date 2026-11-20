@@ -1,0 +1,9 @@
+Sleep running in background. Waiting for the peer message from dsh-bridge-cap — will print `RECEIVED:<text>` when it arrives.
+
+Sleep 75 finished (exit 0). Status:
+
+- **Step 1 ✅** — `PING-FROM-A` sent to `uds:\\.\pipe\cc-msg-captureB`, msg_id `83aec971…`, delivered to that session's inbox.
+- **Step 2 ✅** — `sleep 75` completed in background.
+- **Step 3 ⏳** — no peer message from `dsh-bridge-cap` has arrived yet (this notification was only the sleep task completing, not a message). The peer is listed and idle (`dsh-bridge-cap [500f8f]`).
+
+I won't print a `RECEIVED:` line without an actual message. Staying alive — if dsh-bridge-cap sends one, it'll be delivered as a new turn and I'll print `RECEIVED:<its text>` and exit then.

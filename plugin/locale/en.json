@@ -1,0 +1,5 @@
+{
+  "title": "CC Bridge",
+  "description": "Peer-messaging bridge between this DSH session and live Claude Code sessions (SendMessage wire protocol).",
+  "detail": "Talks Claude Code's internal cross-session messaging protocol natively: registers as a first-class peer named 'dsh-bridge' in ~/.claude/sessions, so any Claude Code session can SendMessage it by name, and it can inject messages into any live CC session (idle sessions are woken). Tools: cc_who, cc_send, cc_recv, cc_status. Requires `npm i -g cc-bridge` and Claude Code 2.1.327+."
+}

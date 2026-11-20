@@ -1,0 +1,3 @@
+[
+  "{\"msgV\":1,\"msg_id\":\"83aec971-791b-4f91-902e-87b7ebb70cde\",\"type\":\"user\",\"message\":{\"role\":\"user\",\"content\":\"<cross-session-message from=\\\"uds:\\\\\\\\.\\\\pipe\\\\LOCAL\\\\cc-msg-65ff93525fba5e58ce3173cbe612e567\\\" from-name=\\\"dsh-conf-54\\\" from-mode=\\\"bypass\\\">\\nPING-FROM-A\\n</cross-session-message>\"},\"priority\":\"next\",\"from\":\"uds:\\\\\\\\.\\\\pipe\\\\LOCAL\\\\cc-msg-65ff93525fba5e58ce3173cbe612e567\"}"
+]

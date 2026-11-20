@@ -1,0 +1,12 @@
+- insert:
+    - id: cc-bridge-mcp
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: cc-bridge
+        transport: stdio
+        command: cc-bridge
+        args: ['mcp']
+        env:
+          CC_BRIDGE_NAME: dsh-bridge
+        toolCallTimeoutMs: 125000
+        failOnStartupError: false

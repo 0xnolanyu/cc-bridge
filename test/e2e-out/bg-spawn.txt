@@ -1,0 +1,8 @@
+backgrounded · fd51bd33
+  claude agents             list sessions
+  claude attach fd51bd33    open in this terminal
+  claude logs fd51bd33      show recent output
+  claude stop fd51bd33      stop this session
+
+---STDERR---
+Starting background service…

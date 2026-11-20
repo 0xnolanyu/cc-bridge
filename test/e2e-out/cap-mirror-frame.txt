@@ -1,0 +1,1 @@
+{"msgV":1,"msg_id":"333278bc-e9ac-4598-b12d-bca52fdeee1f","type":"user","message":{"role":"user","content":"<cross-session-message from=\"uds:\\\\.\\pipe\\cc-msg-captureB\" from-name=\"dsh-bridge-cap\" from-mode=\"bypass\">\nPING-FROM-A\n</cross-session-message>"},"priority":"next","from":"uds:\\\\.\\pipe\\cc-msg-captureB"}
