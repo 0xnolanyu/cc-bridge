@@ -6,7 +6,7 @@ const { spawn } = require('child_process');
 const { Peer } = require('../lib/peer');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const log = (...a) => console.error('[bg2]', ...a);
-const CLAUDE = 'C:/Users/Administrator/.local/bin/claude.exe';
+const CLAUDE = 'claude (PATH)';
 const CWD = 'E:/workspaces/dsh/dsh-conf';
 const OUT = path.join(__dirname, 'e2e-out');
 

@@ -12,7 +12,7 @@ const registry = require('../lib/registry');
 const sender = require('../lib/sender');
 const wire = require('../lib/wire');
 
-const CLAUDE = 'C:/Users/Administrator/.local/bin/claude.exe';
+const CLAUDE = 'claude (PATH)';
 const CWD = 'E:/workspaces/dsh/dsh-conf';
 const OUT = path.join(__dirname, 'e2e-out');
 fs.mkdirSync(OUT, { recursive: true });
