@@ -1,4 +1,4 @@
-# cc-bridge
+# cc-msg-bridge (CLI: `cc-bridge`)
 
 **EN** — Turn any local process (a DSH session, a script, CI) into a **first-class cross-session messaging peer of Claude Code**, by speaking CC's native SendMessage wire protocol directly. Nothing to install on the Claude Code side; no patching, no UI automation, no API key.
 
@@ -25,7 +25,7 @@ CC 侧零配置：会话在 peer 列表里看到 `dsh-bridge`，`SendMessage to=
 
 ```bash
 # 1. CLI (this repo)
-npm i -g .                # or, once published: npm i -g <package-name>
+npm i -g cc-msg-bridge       # published package / 已发布包名
 
 # 2. DSH plugin bundle (plugin/ directory) — inside a DSH session with full access:
 #    plugin_manager install_bundle → path/to/cc-bridge/plugin

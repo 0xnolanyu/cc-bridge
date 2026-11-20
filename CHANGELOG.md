@@ -4,6 +4,12 @@
 All notable changes to this project are documented in this file.
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本遵循 [SemVer](https://semver.org/lang/zh-CN/)。
 
+## [0.2.0] - 2026-11-21
+
+### Changed
+- 包名发布为 `cc-msg-bridge`（npm 的 `cc-bridge` 名称已被占用）；CLI 命令仍为 `cc-bridge`。
+- 开源化：MIT LICENSE、CHANGELOG、中英双语 README、GitHub 仓库 0xnolanyu/cc-bridge。
+
 ## [0.1.1] - 2026-11-20
 
 ### Added
