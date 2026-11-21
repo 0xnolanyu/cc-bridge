@@ -1,0 +1,4 @@
+- insert:
+    - id: cc-bridge-native-tools
+      # 绝对路径形态：loader 直接加载该文件；发布版用包子路径 'cc-msg-bridge/native'
+      name: 'E:/workspaces/dsh/cc-bridge/native/plugin.js'

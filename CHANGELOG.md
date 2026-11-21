@@ -4,6 +4,15 @@
 All notable changes to this project are documented in this file.
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本遵循 [SemVer](https://semver.org/lang/zh-CN/)。
 
+## [0.2.4] - 2026-11-21
+
+### Added
+- **DSH native tool plugin** (`native/plugin.js`): registers `cc_send` / `cc_who` / `cc_status` as native DSH tools. `cc_send` derives the sender identity from the calling session automatically (`exec.agent.id` → session bridge name via `~/.cc-bridge/sessions/<sessionId>.json`, written by the daemon at startup) — the model never needs to pass `as`. Load with a cordis.patch insert pointing at the plugin file (absolute path locally, package subpath `cc-msg-bridge/native` when published).
+- Daemon writes a session→bridge map file at startup and clears it on exit.
+
+### Changed
+- Retired the resident MCP bridge on the DSH side: `dsh-bridge` no longer registers as a Claude Code peer (disable the `cc-bridge-mcp` patch row; replies now always route to the calling session's own bridge).
+
 ## [0.2.3] - 2026-11-21
 
 ### Changed

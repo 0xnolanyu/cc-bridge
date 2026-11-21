@@ -44,11 +44,30 @@ async function forward(msg) {
   log(`forwarded from=${from} push=${JSON.stringify(r)} len=${text.length}`);
 }
 
+// 会话映射表：~/.cc-bridge/sessions/<sessionId>.json → {name,pipe,pid,at}
+// 供原生插件 bridgeFor() 反查"这个 DSH 会话用哪个桥名"（pinned 名也能查）。
+const SESSION_MAP_DIR = path.join(os.homedir(), '.cc-bridge', 'sessions');
+function writeSessionMap() {
+  try {
+    fs.mkdirSync(SESSION_MAP_DIR, { recursive: true });
+    fs.writeFileSync(path.join(SESSION_MAP_DIR, SESSION_ID + '.json'), JSON.stringify({
+      name: NAME, pipe: '\\\\.\\pipe\\cc-msg-' + NAME, pid: process.pid, at: Date.now(),
+    }));
+  } catch (_) {}
+}
+function clearSessionMap() {
+  try { fs.unlinkSync(path.join(SESSION_MAP_DIR, SESSION_ID + '.json')); } catch (_) {}
+}
+
 async function main() {
   if (!SESSION_ID) { console.error('DSH_SESSION_ID or --session required'); process.exit(2); }
   fs.mkdirSync(path.dirname(LOG), { recursive: true });
   const peer = new Peer({ name: NAME, pipePath: '\\\\.\\pipe\\cc-msg-' + NAME });
   await peer.start();
+  writeSessionMap();
+  for (const sig of ['SIGINT', 'SIGTERM', 'exit']) {
+    try { process.on(sig, () => { clearSessionMap(); if (sig !== 'exit') process.exit(0); }); } catch (_) {}
+  }
   log(`daemon up: peer=${NAME} pipe=${peer.pipePath} pid=${process.pid} → auto-discover ${SESSION_ID}`);
   const retryQ = []; // push 失败不丢消息：下轮重试
   for (;;) {

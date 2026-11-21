@@ -1,0 +1,13 @@
+{
+  "name": "@local/dsh-cc-bridge-native",
+  "version": "0.2.4",
+  "private": true,
+  "files": [
+    "cordis.patch.yml"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
