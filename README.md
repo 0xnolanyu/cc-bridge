@@ -51,6 +51,11 @@ Reverse-engineered from the Claude Code binary and verified on the wire (full de
 2. Sending = connect to the target's inbox pipe, write an auth line `{type:'auth', token:<target key's peerToken>}`, then a user frame (`cross-session-message` envelope), disconnect; idle targets get a `notify_when_idle` control frame to wake them / 发送=连对方收件箱管道，auth 行+user 帧；空闲对方另发 notify_when_idle 唤醒。
 3. cc-bridge itself registers as a peer, so CC replies with its own native SendMessage tool — the last hop is the genuine article, nothing forged / cc-bridge 自身也注册为 peer，CC 用它自己的 SendMessage 本尊回信，最后一跳零伪造。
 
+## DSH integration (optional) / DSH 侧集成（可选）
+
+[`tools/dsh/`](tools/dsh/) adds push delivery into [DeepSeek Harness (DSH)] sessions: a per-session resident daemon injects incoming CC messages into the DSH conversation via its local web API within seconds, plus a supervisor that auto-bridges every DSH session and keeps the bridges alive. Details in [tools/dsh/README.md](tools/dsh/README.md).
+[`tools/dsh/`](tools/dsh/) 把消息秒级推送进 [DeepSeek Harness (DSH)] 会话：每会话常驻 daemon 经本地 web API 注入，supervisor 自动给全部 DSH 会话上桥并守护。详见 [tools/dsh/README.md](tools/dsh/README.md)。
+
 ## Environment / 环境变量
 
 | Variable | Default | Description |

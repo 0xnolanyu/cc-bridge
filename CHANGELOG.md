@@ -4,6 +4,12 @@
 All notable changes to this project are documented in this file.
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本遵循 [SemVer](https://semver.org/lang/zh-CN/)。
 
+## [0.2.2] - 2026-11-21
+
+### Added
+- `tools/dsh/`：DSH 侧集成——每会话常驻 daemon（CC→DSH 秒级推送注入本地 web API）、`register-all.js --watch` supervisor（全部 DSH 会话自动上桥/死桥补拉/幽灵清理）、`bridge-up.js`、可移植自启链（`bridges-up.cmd`+`invisible.vbs`）、`dsh-titles.js` 会话标题提取。
+- 文档：bypass 权限模式收方（CC ≥ 2.1.329）需在 `~/.claude/settings.json` 设 `"crossSessionInbound": "accept"`（README+PROTOCOL）。
+
 ## [0.2.1] - 2026-11-21
 
 ### Added
