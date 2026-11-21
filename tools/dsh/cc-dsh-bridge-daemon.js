@@ -40,7 +40,7 @@ async function forward(msg) {
   if (!text) return;
   const hhmm = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Shanghai' });
   const body = `📡 **cc·${from} → dsh·${SELF_TITLE}** · ${hhmm}｜${text.replace(/\n+/g, ' ')}`;
-  const r = await push({ url: URL_BASE || undefined, sessionId: SESSION_ID, text: body, mode: 'queue' });
+  const r = await push({ url: URL_BASE || undefined, sessionId: SESSION_ID, text: body, mode: process.env.PUSH_MODE || 'steer' });
   log(`forwarded from=${from} push=${JSON.stringify(r)} len=${text.length}`);
 }
 

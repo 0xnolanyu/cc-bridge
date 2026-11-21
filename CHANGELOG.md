@@ -4,6 +4,11 @@
 All notable changes to this project are documented in this file.
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本遵循 [SemVer](https://semver.org/lang/zh-CN/)。
 
+## [0.2.3] - 2026-11-21
+
+### Changed
+- daemon 注入模式默认 `steer`（原 `queue`）：DSH 忙时消息在**下一步即插入**当前回合，不再等回合结束；空闲行为不变。可用环境变量 `PUSH_MODE=queue` 回退排队语义。
+
 ## [0.2.2] - 2026-11-21
 
 ### Added

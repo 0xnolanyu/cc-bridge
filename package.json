@@ -1,6 +1,6 @@
 {
   "name": "cc-msg-bridge",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Bridge any local process to Claude Code sessions as a first-class cross-session messaging peer — speaks CC's native SendMessage wire protocol (uds inbox pipes + ~/.claude/sessions registry), zero install on the CC side. / 让任意本地进程与 Claude Code 会话互发消息：原生直连 CC 跨会话通信协议，CC 侧零安装。",
   "private": false,
   "type": "commonjs",
