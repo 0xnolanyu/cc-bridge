@@ -34,7 +34,7 @@ function runningBridges() {
   );
   const ids = new Set();
   for (const line of out.split('\n')) {
-    const m = /--session\s+((?:import-)?session-[0-9a-f-]{36})/.exec(line || '');
+    const m = /--session\s+(\S+)/.exec(line || '');
     if (m) ids.add(m[1]);
   }
   return ids;
@@ -92,6 +92,7 @@ function scan({ dry = false, only = null } = {}) {
   const plan = [];
   for (const [wsId, w] of Object.entries(rows)) {
     for (const s of w.sessionIds || []) {
+      if (/^import-/.test(s)) continue; // import 进来的会话不上桥（外部档案，非活会话）
       if (only && s !== only && s !== 'session-' + only) continue;
       let name;
       if (PINNED.has(s)) name = PINNED.get(s);
