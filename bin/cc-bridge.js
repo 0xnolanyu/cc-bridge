@@ -22,8 +22,14 @@ function fail(e) { console.error('cc-bridge:', e.message || e); process.exit(1);
   }
 
   if (cmd === 'send') {
-    if (!args.to || args.text === undefined) { console.error('usage: cc-bridge send --to <name|uds:pipe> --text "..."'); process.exit(2); }
+    if (!args.to || args.text === undefined) { console.error('usage: cc-bridge send --to <name|uds:pipe> --text "..." [--as <bridge-name>]'); process.exit(2); }
     const peer = new Peer();
+    if (args.as) {
+      // Identity comes from the --as peer (its resident daemon owns the pipe); no bind needed.
+      const r = await peer.send(args.to, args.text, { as: args.as });
+      console.log(JSON.stringify({ ok: true, ...r }));
+      return;
+    }
     // one-shot send still needs a registered identity for the reply address to be vouched
     await peer.start();
     try {
@@ -52,7 +58,8 @@ function fail(e) { console.error('cc-bridge:', e.message || e); process.exit(1);
   console.log('cc-bridge — DSH <-> Claude Code peer bridge\n' +
     'usage:\n' +
     '  cc-bridge who                                   list live Claude Code sessions\n' +
-    '  cc-bridge send --to <name|uds:pipe> --text "…"  send a message (peer registers itself briefly)\n' +
+    '  cc-bridge send --to <name|uds:pipe> --text "…" [--as <bridge-name>]\n' +
+    '                                                 send under another registered identity (e.g. your session bridge)\n' +
     '  cc-bridge recv [--timeout ms]                   register + wait for one message\n' +
     '  cc-bridge mcp                                   run the stdio MCP server (bridge stays resident)');
 })().catch(fail);

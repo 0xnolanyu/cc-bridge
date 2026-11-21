@@ -4,6 +4,15 @@
 All notable changes to this project are documented in this file.
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本遵循 [SemVer](https://semver.org/lang/zh-CN/)。
 
+## [0.2.1] - 2026-11-21
+
+### Added
+- `cc_send` 新增 `as` 参数；CLI `cc-bridge send --as <桥名>`：以另一个已注册 peer 的身份发送（例如某个 DSH 会话的常驻桥）。回信会经该会话的 daemon 自动路由回去。解决"发送方一律显示 dsh-bridge"的身份混淆。
+- CLI 带 `--as` 时不再绑自己的收件管道（避免与常驻桥 EADDRINUSE）。
+
+### Fixed
+- 注册表版本号由硬编码改为读 package.json。
+
 ## [0.2.0] - 2026-11-21
 
 ### Changed

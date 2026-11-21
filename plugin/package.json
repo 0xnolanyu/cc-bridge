@@ -1,10 +1,24 @@
 {
   "name": "@local/dsh-cc-bridge",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "type": "module",
-  "exports": { "./locale/*.json": "./locale/*.json", "./icon": "./icon.svg" },
-  "files": ["cordis.patch.yml", "locale/*.json", "docs", "icon.svg"],
-  "dependencies": { "cc-msg-bridge": "^0.2.0" },
-  "dsh": { "bundle": { "patch": "./cordis.patch.yml" } }
+  "exports": {
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "cordis.patch.yml",
+    "locale/*.json",
+    "docs",
+    "icon.svg"
+  ],
+  "dependencies": {
+    "cc-msg-bridge": "^0.2.0"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
 }

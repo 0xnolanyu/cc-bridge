@@ -15,7 +15,7 @@ module.exports = function startMcp() {
 
   const TOOLS = [
     { name: 'cc_who', description: 'List live Claude Code peer sessions on this machine (name, status, idle/busy, cwd, sessionId).', inputSchema: { type: 'object', properties: {} } },
-    { name: 'cc_send', description: 'Send a message to a Claude Code session. The message is injected into its conversation; an idle session is woken. Use a session name from cc_who, a sessionId, or an explicit "uds:\\\\\\\\.\\\\pipe\\\\..." address.', inputSchema: { type: 'object', properties: { to: { type: 'string', description: 'peer session name | sessionId | uds:<pipe path>' }, text: { type: 'string', description: 'message body (plain text, first line should be self-contained)' } }, required: ['to', 'text'] } },
+    { name: 'cc_send', description: 'Send a message to a Claude Code session. The message is injected into its conversation; an idle session is woken. Use a session name from cc_who, a sessionId, or an explicit "uds:\\\\\\\\.\\\\pipe\\\\..." address. IMPORTANT: pass as=<your own bridge name> so the recipient knows which DSH session is talking — it is the "dsh·<name>" label shown in messages forwarded into your session (short id like dsh-a8c82 works); omit only if you have none.', inputSchema: { type: 'object', properties: { to: { type: 'string', description: 'peer session name | sessionId | uds:<pipe path>' }, text: { type: 'string', description: 'message body (plain text, first line should be self-contained)' }, as: { type: 'string', description: 'sender identity: your bridge name from cc_who (full "dsh-<id>（title）" or short id). Replies then reach your session.' } }, required: ['to', 'text'] } },
     { name: 'cc_recv', description: 'Block until a Claude Code session sends this bridge a message (push). Returns immediately if messages are already queued. Default timeout 55s returns an empty list.', inputSchema: { type: 'object', properties: { timeout_ms: { type: 'number', description: 'max wait, default 55000, cap 120000' } } } },
     { name: 'cc_status', description: 'Bridge health: registration, pipe, name, recent inbox events.', inputSchema: { type: 'object', properties: {} } }
   ];
@@ -40,7 +40,7 @@ module.exports = function startMcp() {
       return JSON.stringify({ peers: peer.who() }, null, 2);
     }
     if (name === 'cc_send') {
-      const r = await peer.send(args.to, String(args.text));
+      const r = await peer.send(args.to, String(args.text), args.as ? { as: String(args.as) } : {});
       return JSON.stringify({ ok: true, ...r }, null, 2);
     }
     if (name === 'cc_recv') {

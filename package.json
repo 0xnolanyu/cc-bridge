@@ -1,16 +1,42 @@
 {
   "name": "cc-msg-bridge",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Bridge any local process to Claude Code sessions as a first-class cross-session messaging peer — speaks CC's native SendMessage wire protocol (uds inbox pipes + ~/.claude/sessions registry), zero install on the CC side. / 让任意本地进程与 Claude Code 会话互发消息：原生直连 CC 跨会话通信协议，CC 侧零安装。",
   "private": false,
   "type": "commonjs",
   "license": "MIT",
-  "bin": { "cc-bridge": "bin/cc-bridge.js" },
+  "bin": {
+    "cc-bridge": "bin/cc-bridge.js"
+  },
   "main": "lib/peer.js",
-  "files": ["lib", "bin", "mcp", "README.md", "CHANGELOG.md", "LICENSE", "PROTOCOL.md"],
-  "engines": { "node": ">=18" },
-  "repository": { "type": "git", "url": "https://github.com/0xnolanyu/cc-bridge" },
+  "files": [
+    "lib",
+    "bin",
+    "mcp",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "PROTOCOL.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/0xnolanyu/cc-bridge"
+  },
   "homepage": "https://github.com/0xnolanyu/cc-bridge#readme",
-  "bugs": { "url": "https://github.com/0xnolanyu/cc-bridge/issues" },
-  "keywords": ["claude-code", "claude", "mcp", "peer-messaging", "cross-session", "named-pipe", "agent-communication", "dsh"]
+  "bugs": {
+    "url": "https://github.com/0xnolanyu/cc-bridge/issues"
+  },
+  "keywords": [
+    "claude-code",
+    "claude",
+    "mcp",
+    "peer-messaging",
+    "cross-session",
+    "named-pipe",
+    "agent-communication",
+    "dsh"
+  ]
 }
