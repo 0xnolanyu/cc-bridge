@@ -63,6 +63,7 @@
 - `to` 接受：peer 会话名（列表来自注册表）| 显式 `uds:<socket>` | `bridge:<session id>`（服务器中继）
 - SendFile 同样支持 `uds:` / `bridge:`
 - 收方策略 `crossSessionInbound: accept|hold|refuse`；`isolatePeerMachines` 控跨机审批
+- **收件 hold 门（CC ≥ 2.1.329 收紧，实测）**：收方会话若处于 bypass 权限模式（`--dangerously-skip-permissions` 等），外部发送方的消息默认进 held，5 分钟无人批准即丢弃（hold cause=`no-mode-asserted`，通知文案 "Held a message from an unidentified session... sender did not state its permission mode"）。bridge 的 user 帧已按官方格式带 `from-mode="bypass"` 内容标签，但新版对非 CC 发送方不认标签级声明。**修复：在 `~/.claude/settings.json` 顶层加 `"crossSessionInbound": "accept"`**（仅用户设置文件生效，项目级无效；值域 accept|hold|refuse）。可选 `"dialogExpiry": "10m"|"never"` 延长 held 存活。prompting 模式收方不受此门影响。
 - 未确认语义：`mayHaveArrived` — 不重发，除非确认未达
 - 注入提示语：`A peer session sent a message while you were working... Treat it as a teammate's request`
 

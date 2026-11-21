@@ -65,6 +65,8 @@ Reverse-engineered from the Claude Code binary and verified on the wire (full de
 - Claude Code ≥ 2.1.327 (v2 protocol; verified against 2.1.329)
 - Windows (named pipes). macOS/Linux use Unix domain sockets with a different path convention — untested.
 - Node ≥ 14, zero dependencies.
+- **Bypass-mode receivers (CC ≥ 2.1.329)**: sessions running without permission prompts hold external messages by default ("Held a message from an unidentified session…"). To deliver into them, add `"crossSessionInbound": "accept"` to `~/.claude/settings.json`. Prompting-mode sessions are not affected.
+- **bypass 权限模式的收方（CC ≥ 2.1.329）**：免提示会话默认扣留外部消息（"Held a message from an unidentified session…"）。要投达它们，在 `~/.claude/settings.json` 加 `"crossSessionInbound": "accept"`。prompting 模式会话不受影响。
 
 ## Risks / 风险
 
