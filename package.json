@@ -13,7 +13,9 @@
     "lib",
     "bin",
     "mcp",
+    "tools",
     "README.md",
+    "README.zh-CN.md",
     "CHANGELOG.md",
     "LICENSE",
     "PROTOCOL.md"
