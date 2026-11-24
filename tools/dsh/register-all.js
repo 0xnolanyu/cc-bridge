@@ -4,8 +4,9 @@
  *   node register-all.js [--dry] [--only <sessionId>] [--watch]
  * 规则:
  *   - 来源 ~/.dsh/storages/workspace.json tables.workspaces 的 sessionIds
- *   - peer 名 = 'dsh-<短id5>（<标题>）'（session/title 事件，fallback 工作区名），重名追加 id 尾4
- *   - 已在跑的桥（进程命令行含 --session <id>）跳过
+ *   - peer 名 = 'dsh-<短id5>（<标题>）'（取 session/title 事件；无会话标题时写「未命名」，不借用工作区名）
+ *     重名追加 id 尾4
+ *   - 已在跑的桥（进程命令行含 --session <id>）跳过；但桥名与会话当前标题不一致（会话后来改名）→ 重拉换名
  *   - spawn 分离 daemon；本脚本必须经 WMI/计划任务/Run键 之类【脱离 DSH 作业树】的途径启动
  *     （从 DSH bash 里直接跑，daemon 会进 job object，host 重启时被连坐——这就是昨晚断桥根因）
  *   - --watch: 每 30s 扫描——新会话自动上桥、死桥自动补拉、死 daemon 注册表幽灵清理
@@ -21,23 +22,37 @@ const HERE = __dirname;
 const NODE = process.execPath;
 const SESSIONS_DIR = path.join(os.homedir(), '.claude', 'sessions');
 const LOG = path.join(os.homedir(), '.cc-bridge', 'supervisor.log');
+// 改名冷却：同一会话两次改名至少间隔这么久（防"名字比对失真 → 每轮误杀"的抖动）
+const RENAME_COOLDOWN_MS = 10 * 60 * 1000;
+const RENAMED_AT = new Map();
 
 function log(line) {
   try { fs.appendFileSync(LOG, `[${new Date().toISOString()}] ${line}\n`); } catch (_) {}
   console.log(line);
 }
 
+// 返回 Map<sessionId, pid>。只从 PowerShell 输出里取 ASCII（pid、--session）：
+// supervisor 跑在隐藏控制台里，输出编码不是 UTF-8，中文桥名经 stdout 会变成 '?'，不能拿来比对。
 function runningBridges() {
   const out = execSync(
-    `powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \\"Name='node.exe'\\" | ForEach-Object { $_.CommandLine }"`,
+    `powershell -NoProfile -Command "Get-CimInstance Win32_Process -Filter \\"Name='node.exe'\\" | ForEach-Object { '' + $_.ProcessId + ' ' + $_.CommandLine }"`,
     { encoding: 'utf8' }
   );
-  const ids = new Set();
+  const map = new Map();
   for (const line of out.split('\n')) {
-    const m = /--session\s+(\S+)/.exec(line || '');
-    if (m) ids.add(m[1]);
+    const m = /^\s*(\d+)\s.*--session\s+(\S+)/.exec(line || '');
+    if (m) map.set(m[2], Number(m[1]));
   }
-  return ids;
+  return map;
+}
+
+// 在线桥当前名字：读 daemon 自己写的会话映射文件（UTF-8 JSON），且文件里的 pid 必须就是在线进程
+const SESSION_MAP_DIR = path.join(os.homedir(), '.cc-bridge', 'sessions');
+function liveBridgeName(sessionId, pid) {
+  try {
+    const j = JSON.parse(fs.readFileSync(path.join(SESSION_MAP_DIR, sessionId + '.json'), 'utf8'));
+    return j && j.pid === pid && typeof j.name === 'string' ? j.name : null;
+  } catch (_) { return null; }
 }
 
 function pidAlive(pid) {
@@ -76,19 +91,15 @@ function scan({ dry = false, only = null } = {}) {
     running = runningBridges();
   } catch (e) {
     log(`scan aborted (transient): ${String(e && e.message || e).slice(0, 160)}`);
-    return { spawned: 0, skipped: 0 };
+      return { spawned: 0, renamed: 0, skipped: 0 };
   }
-  // 固定地址桥（可选）：env PINNED_SESSIONS="session-xxxx=dsh-architect,session-yyyy=dsh-lead"
-  // 固定名便于对端记忆/回信；未列出的会话用 dsh-<短id>（<标题>） 命名
-  const PINNED = new Map(
-    (process.env.PINNED_SESSIONS || '')
-      .split(',').map(x => x.trim()).filter(Boolean)
-      .map(x => { const i = x.indexOf('='); return i > 0 ? [x.slice(0, i), x.slice(i + 1)] : null; })
-      .filter(Boolean)
-  );
+  // 固定地址桥：架构师主通道（loop-eng 已知 dsh-architect）
+  const PINNED = new Map([
+    ['session-18daa312-ca62-45b3-a687-73f5604015d5', 'dsh-architect'],
+  ]);
   const used = new Set();
 
-  let spawned = 0, skipped = 0;
+  let spawned = 0, renamed = 0, skipped = 0;
   const plan = [];
   for (const [wsId, w] of Object.entries(rows)) {
     for (const s of w.sessionIds || []) {
@@ -99,18 +110,41 @@ function scan({ dry = false, only = null } = {}) {
       else {
         const t = titleOf(s, rows);
         const short = s.replace(/^session-/, '').slice(0, 5);
-        const cleanTitle = sanitizeName(t.title).replace(/[（）()]/g, '[]').slice(0, 24);
+        // 只有真正的会话标题才进名字；兜底不再借用工作区名（文件夹名不是会话名）
+        const isSessionTitle = t.source !== 'workspace-fallback' && t.source !== 'none';
+        const cleanTitle = (isSessionTitle ? sanitizeName(t.title) : '未命名').replace(/[（）()]/g, '[]').slice(0, 24);
         name = `dsh-${short}（${cleanTitle}）`;
       }
       if (used.has(name)) name += '-' + s.slice(-4);
       used.add(name);
-      if (running.has(s)) { skipped++; if (!WATCH) plan.push(['SKIP', name, s]); continue; }
+      const pid = running.get(s);
+      if (pid) {
+        // 桥活着但名字过期（会话后来改了标题）→ 杀掉，下一轮按新名重拉。
+        // 名字只用 daemon 自己写的映射文件比对；拿不到名字就不动（宁可名字旧，不可误杀）。
+        const liveName = liveBridgeName(s, pid);
+        if (liveName && liveName !== name) {
+          const last = RENAMED_AT.get(s);
+          if (last && Date.now() - last < RENAME_COOLDOWN_MS) {
+            log(`RENAME-SUPPRESSED ${name} (renamed ${Math.round((Date.now() - last) / 1000)}s ago; live name differs — check name comparison)`);
+          } else {
+            plan.push(['RENAME', `${liveName} → ${name}`, s]);
+            if (!dry) {
+              RENAMED_AT.set(s, Date.now());
+              try { process.kill(pid); renamed++; } catch (e) { log('rename kill FAILED ' + name + ': ' + String(e && e.message || e).slice(0, 120)); }
+            }
+          }
+        } else if (!WATCH) plan.push(['SKIP', name, s]);
+        skipped++;
+        continue;
+      }
       if (dry) { plan.push(['DRY ', name, s]); continue; }
       // 经 powershell Start-Process 间接拉起：中间进程立即退出，daemon 成为孤儿，
       // 不再是 supervisor 的活子孙——supervisor 被整树击杀时波及不到 daemon。
       // 参数走 PS 单引号字面量数组（名字含空格/中文/括号都安全）
       const q = (v) => "'" + String(v).replace(/'/g, "''") + "'";
-      const argList = [path.join(HERE, 'cc-dsh-bridge-daemon.js'), '--session', s, '--name', name].map(q).join(',');
+      // 桥名经 $env:BRIDGE_NAME 传递（daemon 的兜底路径）：Start-Process 拼接 ArgumentList 时
+      // 不给含空格元素加引号（PS5.1 怪癖，嵌引号也防不住），argv 传名必被截断；env 不经命令行重组，天然安全。
+      const argList = [path.join(HERE, 'cc-dsh-bridge-daemon.js'), '--session', s].map(q).join(',');
       try {
         execSync(
           'powershell -NoProfile -Command "$env:BRIDGE_NAME=' + q(name) + '; $env:DSH_SESSION_ID=' + q(s) + '; Start-Process -WindowStyle Hidden -FilePath ' + q(NODE) + ' -ArgumentList @(' + argList + ')"',
@@ -124,12 +158,12 @@ function scan({ dry = false, only = null } = {}) {
       plan.push(['NEW ', name, s]);
     }
   }
-  if (spawned || !WATCH) {
+  if (spawned || renamed || !WATCH) {
     for (const [tag, name, s] of plan) log(`${tag} ${name.padEnd(36)} ${s}`);
-    log(`--- spawned=${spawned} skippedRunning=${skipped}${WATCH ? ' [watch]' : ''}`);
+    log(`--- spawned=${spawned} renamed=${renamed} skippedRunning=${skipped}${WATCH ? ' [watch]' : ''}`);
   }
   cleanGhosts();
-  return { spawned, skipped };
+  return { spawned, renamed, skipped };
 }
 
 const WATCH = process.argv.includes('--watch');

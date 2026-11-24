@@ -9,6 +9,12 @@ All notable changes to this project are documented in this file.
 ### Added
 - **DSH native tool plugin** (`native/plugin.js`): registers `cc_send` / `cc_who` / `cc_status` as native DSH tools. `cc_send` derives the sender identity from the calling session automatically (`exec.agent.id` → session bridge name via `~/.cc-bridge/sessions/<sessionId>.json`, written by the daemon at startup) — the model never needs to pass `as`. Load with a cordis.patch insert pointing at the plugin file (absolute path locally, package subpath `cc-msg-bridge/native` when published).
 - Daemon writes a session→bridge map file at startup and clears it on exit.
+- **Bridge names follow session titles** (`tools/dsh/register-all.js`): each scan compares the live bridge name with the session's current title; a renamed session gets its bridge re-spawned under the new name (10-minute cooldown per session). Sessions that never had a title show 「未命名」 instead of borrowing the workspace folder name.
+- `tools/dsh/list-daemons.ps1`: ASCII-only daemon inventory (pid + session) for auditing.
+
+### Fixed
+- **Supervisor rename-loop massacre**: comparing bridge names via PowerShell stdout mangled Chinese names to `?` under the hidden console's code page (437), making the supervisor kill and re-spawn every Chinese-named bridge each minute. Name comparison now reads the daemon's own UTF-8 session-map file; PowerShell output is used for ASCII (pid/session) only, and a missing name never triggers a kill.
+- **Space-in-name truncation**: `Start-Process -ArgumentList` joins arguments without quoting (PS 5.1), truncating bridge names containing spaces at the first space. The bridge name is now passed via the `BRIDGE_NAME` environment variable (never re-parsed on a command line).
 
 ### Changed
 - Retired the resident MCP bridge on the DSH side: `dsh-bridge` no longer registers as a Claude Code peer (disable the `cc-bridge-mcp` patch row; replies now always route to the calling session's own bridge).
