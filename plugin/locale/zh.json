@@ -1,5 +1,5 @@
 {
   "title": "CC Bridge",
-  "description": "本 DSH 会话与运行中的 Claude Code 会话之间的 peer 消息桥（SendMessage wire 协议）。",
-  "detail": "原生直连 Claude Code 内部跨会话消息协议：在 ~/.claude/sessions 注册名为 dsh-bridge 的一等 peer，任何 CC 会话都能用 SendMessage 按名字发给它；它也能向任意在线 CC 会话注入消息（空闲会话自动唤醒）。工具：cc_who / cc_send / cc_recv / cc_status。需先 npm i -g cc-bridge，要求 Claude Code 2.1.327+。"
+  "description": "DSH 会话与 Claude Code 会话互发消息：CC 侧零配置，DSH 侧原生 cc_send / cc_who / cc_status 工具，来件秒级推入会话。",
+  "detail": "原生直连 Claude Code 内部跨会话消息协议。CC 侧零安装：任何 CC 会话用自带 SendMessage 按会话名即可直达 DSH（例：dsh-a8c82）；DSH 侧注册 cc_send / cc_who / cc_status 原生工具，收到的消息秒级推入当前会话，不再轮询。要求 Claude Code 2.1.327+，DSH 侧随包安装 cc-msg-bridge CLI（无需手动 npm i -g）。"
 }
