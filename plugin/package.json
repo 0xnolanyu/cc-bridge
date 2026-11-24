@@ -1,5 +1,5 @@
 {
-  "name": "@local/dsh-cc-bridge",
+  "name": "cc-bridge-plugin",
   "version": "0.2.4",
   "type": "module",
   "main": "index.js",
@@ -22,5 +22,26 @@
     "bundle": {
       "patch": "./cordis.patch.yml"
     }
-  }
+  },
+  "description": "Two-way messaging between DSH sessions and Claude Code sessions: CC needs zero setup (built-in SendMessage reaches a named DSH session); DSH gets native cc_send / cc_who / cc_status tools.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0xnolanyu/cc-bridge.git",
+    "directory": "plugin"
+  },
+  "homepage": "https://github.com/0xnolanyu/cc-bridge#readme",
+  "bugs": {
+    "url": "https://github.com/0xnolanyu/cc-bridge/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "deepseek",
+    "harness",
+    "dsh",
+    "dsh-plugin",
+    "claude-code",
+    "messaging",
+    "bridge"
+  ],
+  "author": "0xnolanyu"
 }
